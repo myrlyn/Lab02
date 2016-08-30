@@ -1,6 +1,8 @@
 package skeleton;
 
 import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.Reader;
 
 /**
@@ -24,6 +26,37 @@ public class MazeGame
     private boolean[][] blocked;
     
     /**
+     * @return the moveScanner
+     */
+    public Scanner getMoveScanner()
+    {
+        return moveScanner;
+    }
+
+    /**
+     * @param moveScanner the moveScanner to set
+     */
+    public void setMoveScanner(Scanner moveScanner)
+    {
+        this.moveScanner = moveScanner;
+    }
+
+    /**
+     * @param userRow the userRow to set
+     */
+    public void setUserRow(int userRow)
+    {
+        this.userRow = userRow;
+    }
+
+    /**
+     * @param userCol the userCol to set
+     */
+    public void setUserCol(int userCol)
+    {
+        this.userCol = userCol;
+    }
+    /**
      * The current location of the player vertically.
      */
     // TODO: add field here.
@@ -37,16 +70,19 @@ public class MazeGame
      * The scanner from which each move is read.
      */
     // TODO: add field here.
-    private Scanner moveScanner = new Scanner(System.in);
+    private Scanner moveScanner;
     /**
      * The row and column of the goal.
      */
     // TODO: add fields here.
+    private int exitCol;
+    private int exitRow;
     
     /**
      * The row and column of the start.
      */
-    // TODO: add fields here.
+    private int startRow;
+    private int startCol;
 
     /**
      * Constructor initializes the maze with the data in 'mazeFile'.
@@ -54,7 +90,8 @@ public class MazeGame
      */
     public MazeGame(String mazeFile)
     {
-        // TODO
+        loadMaze(mazeFile);
+        moveScanner = new Scanner(System.in);
     }
 
     /**
@@ -65,7 +102,9 @@ public class MazeGame
      */
     public MazeGame(String mazeFile, Scanner moveScanner)
     {
-    	// TODO
+    	loadMaze(mazeFile);
+    	this.moveScanner = moveScanner;
+    	
     }
 
     /**
@@ -107,14 +146,64 @@ public class MazeGame
      *  
      * @param mazeFile the input maze file.
      */
-    // TODO: private void loadMaze(String mazeFile)
+    private void loadMaze(String mazeFile)
+    {
+        blocked = new boolean[19][39];
+        //File file = new File(mazeFile);
+        Scanner fileIn;
+        try
+        {          
+            fileIn = new Scanner(new File(mazeFile));
+            while (fileIn.hasNext())
+            {                
+                for (int i =0; i < 19; i++)
+                {
+                    for (int j = 0; j < 39; j++)
+                    {
+                        char temp = fileIn.next(".").charAt(0);
+                        char wall = '1';
+                        char start = 'S';
+                        char exit = 'G';
+                        char open = ' ';
+                        
+                        if (temp == wall)
+                        {
+                            blocked[i][j] = true;
+                        }
+                        else if (temp == start) 
+                        {
+                            startRow = i;
+                            startCol = j;
+                        }
+                        else if (temp == exit)
+                        {
+                            exitRow = i;
+                            exitCol = j;
+                        }
+                        else if (temp = open)
+                        {
+                            blocked [i][j] = false;
+                        }
+                    }
+                }
+            }
+            fileIn.close();
+        }
+        catch(FileNotFoundException exception)
+        { 
+            System.out.print("File not found.");
+        }
+        
+    }
 
     /**
      * Actually plays the game.
      */
     public void playGame()
     {
-        
+        loadMaze(mazeFile);
+        makeMove(move);
+        playerAtGoal();
     }
 
     /**
@@ -125,21 +214,42 @@ public class MazeGame
     // TODO: 
     public boolean playerAtGoal()
     {
-        
-        return true;
+        if (userRow == exitRow && userCol == exitCol)
+        {
+            return true;
+        } 
+        else 
+        {
+            return false;
+        }
     }
 
     /**
      * Makes a move based on the String.
      * 
-     * @param move
-     *            the direction to make a move in.
+     * @param move the direction to make a move in.
      * @return whether the move was valid.
      */
     public boolean makeMove(String move)
     {
-        // TODO
-        return false;
+        if (move.toLowerCase().charAt(0) = "r" && blocked [userRow][userCol + 1] == false && userCol < 39)
+        {
+            userCol = userCol + 1;
+            return false;
+        }
+        else if (move.toLowerCase().charAt(0) = "l" && blocked [userRow][userCol - 1] == false && userCol > 0)
+        {
+            userCol = userCol - 1;
+            return false;
+        }
+        else if (move.toLowerCase().charAt(0) = "u" && blocked [userRow + 1][userCol] == false && userRow < 0)
+        {
+            userRow = userRow - 1;
+        }
+        else if (move.toLowerCase().charAt(0) = "d" && blocked [userRow + 1][userCol] == false && userRow < 19)
+        {
+            userRow = userRow + 1;
+        }
     }
 
     /**
@@ -165,51 +275,5 @@ public class MazeGame
         game.playGame();
     }
     
-    /**
-     * Getter for Blocked
-     * 
-     */
-    public getBlocked()
-    {
-        return blocked;
-    }
-    /**
-     * Accessor for userCol
-     * @return value of userCol
-     */
-    public getUserCol()
-    {
-        return userCol;
-    }
-    /**
-     * Accessor for userRow
-     * @return value of userRow
-     */
-    public getUserRow()
-    {
-        return row;
-    }
-    /**
-     * Mutator for blocked
-     */
-    public setBlocked(boolean[][] blockedpt)
-    {
-        blocked = blockedpt;
-    }
-    /**
-     * Mutator for userCol
-     * @param userColpt pass through variable for assigning userCol value.
-     */
-    public setUserCol(booleen[][] userColpt)
-    {
-        userCol = userColpt;
-    }
-    /**
-     * Mutator for userRow
-     * @param userRowpt pass through variable for assigning userRow value.
-     */
-    public setUserRow(boolean[][] userRowpt)
-    {
-        userRow = userRowpt;
-    }
+    
 }
