@@ -75,11 +75,14 @@ public class MazeGame
      * The row and column of the goal.
      */
     // TODO: add fields here.
+    private int exitCol;
+    private int exitRow;
     
     /**
      * The row and column of the start.
      */
-    // TODO: add fields here.
+    private int startRow;
+    private int startCol;
 
     /**
      * Constructor initializes the maze with the data in 'mazeFile'.
@@ -146,22 +149,45 @@ public class MazeGame
     private void loadMaze(String mazeFile)
     {
         blocked = new boolean[19][39];
-        File file = new File(mazeFile);
+        //File file = new File(mazeFile);
         Scanner fileIn;
         try
         {          
-            fileIn = new Scanner(file);
+            fileIn = new Scanner(new File(mazeFile));
             while (fileIn.hasNext())
-            {
+            {                
                 for (int i =0; i < 19; i++)
                 {
                     for (int j = 0; j < 39; j++)
                     {
-                        blocked[i][j] = fileIn.nextLine();
+                        char temp = fileIn.next(".").charAt(0);
+                        char wall = '1';
+                        char start = 'S';
+                        char exit = 'G';
+                        char open = ' ';
+                        
+                        if (temp == wall)
+                        {
+                            blocked[i][j] = true;
+                        }
+                        else if (temp == start) 
+                        {
+                            startRow = i;
+                            startCol = j;
+                        }
+                        else if (temp == exit)
+                        {
+                            exitRow = i;
+                            exitCol = j;
+                        }
+                        else if (temp == open)
+                        {
+                            blocked [i][j] = false;
+                        }
                     }
                 }
             }
-            
+            fileIn.close();
         }
         catch(FileNotFoundException exception)
         { 
@@ -175,7 +201,9 @@ public class MazeGame
      */
     public void playGame()
     {
-        
+        loadMaze(mazeFile);
+        makeMove(move);
+        playerAtGoal();
     }
 
     /**
@@ -186,21 +214,42 @@ public class MazeGame
     // TODO: 
     public boolean playerAtGoal()
     {
-        
-        return true;
+        if (userRow == exitRow && userCol == exitCol)
+        {
+            return true;
+        } 
+        else 
+        {
+            return false;
+        }
     }
 
     /**
      * Makes a move based on the String.
      * 
-     * @param move
-     *            the direction to make a move in.
+     * @param move the direction to make a move in.
      * @return whether the move was valid.
      */
     public boolean makeMove(String move)
     {
-        // TODO
-        return false;
+        if (Character.toLowerCase(move.charAt(0)) = "r" && blocked [userRow][userCol + 1] == false && userCol < 39)
+        {
+            userCol = userCol + 1;
+            return false;
+        }
+        else if (Character.toLowerCase(move.charAt(0)) = "l" && blocked [userRow][userCol - 1] == false && userCol > 0)
+        {
+            userCol = userCol - 1;
+            return false;
+        }
+        else if (Character.toLowerCase(move.charAt(0)) = "u" && blocked [userRow + 1][userCol] == false && userRow < 0)
+        {
+            userRow = userRow - 1;
+        }
+        else if (Character.toLowerCase(move.charAt(0)) = "d" && blocked [userRow + 1][userCol] == false && userRow < 19)
+        {
+            userRow = userRow + 1;
+        }
     }
 
     /**
